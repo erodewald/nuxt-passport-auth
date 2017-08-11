@@ -1,15 +1,17 @@
 import express from 'express'
+import session from 'express-session'
+import bodyParser from 'body-parser'
+import cookieParser from 'cookie-parser'
+import passport from 'passport'
+import mongoose from 'mongoose'
 import { Nuxt, Builder } from 'nuxt'
+
 import api from './api'
-const bodyParser = require('body-parser')
-const session = require('express-session')
-const cookieParser = require('cookie-parser')
-const passport = require('passport')
+import { db } from './config'
 
 const app = express()
 const host = process.env.HOST || '127.0.0.1'
 const port = process.env.PORT || 3000
-
 app.set('port', port)
 
 app.use(bodyParser.json())
@@ -22,6 +24,13 @@ app.use(session({
 }))
 app.use(passport.initialize())
 app.use(passport.session())
+
+// Set up DB
+mongoose.connect(db)
+mongoose.Promise = global.Promise
+
+// Set up passport auth
+require('./auth_config')(passport)
 
 app.use('/api', api)
 

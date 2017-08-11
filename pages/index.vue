@@ -1,7 +1,7 @@
 <template>
   <section>
     <div>
-      <h1 class="title">Investition Balance Tracker</h1>
+      <h2 class="title">Testing Passport.js + Nuxt.js (SSR)</h2>
     </div>
   </section>
 </template>

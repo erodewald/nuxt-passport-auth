@@ -33,6 +33,7 @@ router.post('/logout', (req, res) => {
   res.json({ ok: true })
 })
 
+// @todo
 /* router.patch('/', (req, res) => {
   if (!req.user || !req.user.id) return res.sendStatus(401)
   User.findById(req.user.id, (err, user) => {
