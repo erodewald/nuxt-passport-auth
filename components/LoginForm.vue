@@ -7,6 +7,13 @@
       <a @click.prevent="reset">Close</a>
       <br/><br/>
       <div v-if="$store.state.authUser">
+        <form v-if="mode.passwordRecovery">
+          <p class="error" v-if="form.error">{{ form.error }}</p>
+          <p>Current password<input type="password" v-model="form.currentPassword" /></p>
+          <p>New password<input type="password" v-model="form.password" /></p>
+          <p>New password (Again)<input type="password" v-model="form.passwordAgain" /></p>
+        </form>
+        <button @click.prevent="changePassword">Change password</button><br />
         <button @click.prevent="logout">Logout</button>
       </div>
       <div v-else>
@@ -14,7 +21,10 @@
           <p class="error" v-if="form.error">{{ form.error }}</p>
           <p>Email: <input type="text" v-model="form.email" name="email" /></p>
           <p>Password: <input type="password" v-model="form.password" name="password" /></p>
-          <p v-if="mode.register">Password (Again): <input type="password" v-model="form.passwordAgain" name="passwordAgain" /></p>
+          <p v-if="mode.register">
+            Password (Again):
+            <input type="password" v-model="form.passwordAgain" name="passwordAgain" />
+          </p>
           <button type="submit">
             {{mode.register ? 'Create account' : 'Sign in'}}
           </button>
@@ -34,7 +44,8 @@ const getDefaultData = () => ({
     error: null,
     email: '',
     password: '',
-    passwordAgain: ''
+    passwordAgain: '',
+    currentPassword: '' // For change password form
   },
   mode: {
     register: false,
@@ -69,6 +80,24 @@ export default {
     async logout () {
       try {
         await this.$store.dispatch('logout')
+        this.reset()
+      } catch (e) {
+        this.form.error = e.message
+      }
+    },
+    async changePassword () {
+      if (!this.mode.passwordRecovery) {
+        this.mode.passwordRecovery = true
+        return
+      }
+      try {
+        if (this.form.password !== this.form.passwordAgain) {
+          throw Error('Passwords should match')
+        }
+        await this.$store.dispatch('changePassword', {
+          currentPassword: this.form.currentPassword,
+          newPassword: this.form.password
+        })
         this.reset()
       } catch (e) {
         this.form.error = e.message

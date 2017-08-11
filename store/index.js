@@ -38,10 +38,17 @@ export const actions = {
       }
     }
   },
-
   async logout ({ commit }) {
     const { data } = await axios.post('/api/auth/logout')
     if (data.ok) commit('SET_USER', null)
+  },
+  async changePassword ({ commit }, { currentPassword, newPassword }) {
+    if (!currentPassword || !newPassword) throw new Error('All fields are required')
+    try {
+      await axios.patch('/api/auth', { currentPassword, newPassword })
+      commit('SET_USER', null)
+    } catch (error) {
+      throw new Error('Wrong password')
+    }
   }
-
 }

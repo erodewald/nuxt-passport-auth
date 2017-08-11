@@ -33,14 +33,16 @@ router.post('/logout', (req, res) => {
   res.json({ ok: true })
 })
 
-// @todo
-/* router.patch('/', (req, res) => {
+router.patch('/', (req, res) => {
   if (!req.user || !req.user.id) return res.sendStatus(401)
   User.findById(req.user.id, (err, user) => {
     if (err) return res.sendStatus(404)
-    user.password = req.body.password
-    user.save(err => res.json({ ok: !err }))
+    user.comparePassword(req.body.currentPassword, (err, isMatch) => {
+      if (err || !isMatch) return res.sendStatus(400)
+      user.password = req.body.newPassword
+      user.save(err => res.sendStatus(err ? 500 : 200))
+    })
   })
 })
- */
+
 export default router
